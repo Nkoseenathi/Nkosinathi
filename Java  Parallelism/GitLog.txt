@@ -1,0 +1,12 @@
+c946b03 Sequential output
+e717938 Calculate basins sequentially
+4d04a78 Load data to array
+fff0402 Complete Output class
+5d7c64a Output data
+6181aeb Load data
+0627ca1 Method for calculating time and creating the fj framework
+1cab6be Create variables and constructor
+310d252 Class Output class for results
+58b0deb Compute method for caculating basins
+572bab2 Create variables and add constructor
+0253ffc Create basin class
