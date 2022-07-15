@@ -1,4 +1,0 @@
----> When running the programs enter the file names without the .txt extention
----> Sequential main class is the file named Sequential.java
----> Parallel main class is the file named Output.java
----> Sample data is contained on the bin directory
