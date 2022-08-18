@@ -17,11 +17,19 @@ print("""
     """)
 for i in paths: 
 
-    print("<a name=\"file-item\" href=\"javascript:void(0)\">"+i[2:]+"</a>")    
-    print(" <form id= "+i+" action = \"FormHandler.py\" method = \"post\" target = \"_blank\">")
+    print("<a name=\"file-item\" onsubmit=\"refreshPage()\" href=\"javascript:void(0)\">"+i[2:]+"</a>")    
+    print(" <form action = \"FormHandler.py\" method = \"post\" target = \"_blank\">")
     print("""<select name = "dropdown">
     <option value = "Delete" selected>Delete</option>
     <option value = "Copy">Copy</option>
+    <option value = "Move">Move</option>
+    <option value = "Rename">Rename</option>
+    <script type='text/javascript'>
+    function refreshPage(){
+    console.log("Refreshing page");
+    location.reload ? location.reload() : location = location;
+    }
+    </script>
     </select>""")
     print("<input type = \"submit\" name="+i.replace(" ","^")+" value = \"Commit\"/> </form> ")
 print ("</html>")

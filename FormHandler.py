@@ -1,8 +1,9 @@
 #!C:\Users\Ndira\AppData\Local\Programs\Python\Python36\python.exe
-import FileOperations
 import glob
-import cgi, cgitb 
-
+import os
+import cgi, cgitb
+from File import File
+from Folder import Folder
 
 path = ""
 form = cgi.FieldStorage() 
@@ -10,6 +11,7 @@ form = cgi.FieldStorage()
 if form.getvalue('dropdown'):
    selection = form.getvalue('dropdown')
    path = form.keys()
+   
 else:
    selection = "Not entered"
    
@@ -20,7 +22,15 @@ for i in path:
       
 # Delete file      
 if selection == "Delete":
-   FileOperations.deleteFile(path)
+   
+   if(os.path.isfile(path)):
+      file = File(path)
+      file.deleteFile()
+   else:
+      folder = Folder(path)
+      folder.deleteDir()
+   
+   
 
 # "Refresh the GUI page"
 exec(open("GUI.py").read())
