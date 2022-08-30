@@ -2,35 +2,47 @@
 # Import modules for CGI handling 
 import glob
 import cgi, cgitb 
-paths = glob.glob(".\\*")
-print ("Content-type:text/html\r\n\r\n")
+import GUI
 
 
-print("""
-    <body>
-   <form enctype = "multipart/form-data" 
-                     action = "upload.py" method = "post">
-   <p>File: <input type = "file" name = "filename" /></p>
-   <p><input type = "submit" value = "Upload" /></p>
-   </form>
-</body>
-    """)
-for i in paths: 
 
-    print("<a name=\"file-item\" onsubmit=\"refreshPage()\" href=\"javascript:void(0)\">"+i[2:]+"</a>")    
-    print(" <form action = \"FormHandler.py\" method = \"post\" target = \"_blank\">")
-    print("""<select name = "dropdown">
-    <option value = "Delete" selected>Delete</option>
-    <option value = "Copy">Copy</option>
-    <option value = "Move">Move</option>
-    <option value = "Rename">Rename</option>
-    <script type='text/javascript'>
-    function refreshPage(){
-    console.log("Refreshing page");
-    location.reload ? location.reload() : location = location;
-    }
-    </script>
-    </select>""")
-    print("<input type = \"submit\" name="+i.replace(" ","^")+" value = \"Commit\"/> </form> ")
-print ("</html>")
+class GUI:
+       
+    def layout(self):
+        userFolder = glob.glob(".\\*")
+        print ("Content-type:text/html\r\n\r\n")
+        print("""
+        
+            <body>
+           <form enctype = "multipart/form-data" 
+                             action = "upload.py" method = "post">
+           <p>File: <input type = "file" name = "filename" /></p>
+           <p><input type = "submit" value = "Upload" /></p>
+           </form>
+        </body>
+            """)
+        for i in userFolder: 
+        
+            print("<a name=\"file-item\" onsubmit=\"refreshPage()\" href=\"javascript:void(0)\">"+i[2:]+"</a>")    
+            print(" <form action = \"FormHandler.py\" method = \"post\" target = \"_blank\">")
+            print("""<select name = "dropdown">
+            <option value = "Delete" selected>Delete</option>
+            <option value = "Copy">Copy</option>
+            <option value = "Move">Move</option>
+            <option value = "Rename">Rename</option>
+            <script type='text/javascript'>
+            function refreshPage(){
+            console.log("Refreshing page");
+            location.reload ? location.reload() : location = location;
+            }
+            </script>
+            </select>""")
+            print("<input type = \"submit\" name="+i.replace(" ","^")+" value = \"Commit\"/> </form> ")
+        print ("</html>")
+        
+    def main():
+        gui = GUI.GUI()
+        gui.layout()
     
+    if __name__=="__main__":
+        main()    
