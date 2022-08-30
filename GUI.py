@@ -21,6 +21,7 @@ class GUI:
            </form>
         </body>
             """)
+        # Print all the user files
         for i in userFolder: 
         
             print("<a name=\"file-item\" onsubmit=\"refreshPage()\" href=\"javascript:void(0)\">"+i[2:]+"</a>")    
