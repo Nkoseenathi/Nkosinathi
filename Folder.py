@@ -1,8 +1,8 @@
 import os
 import shutil
-from Files import Files
+from FileItem import FileItem
 
-class Folder(Files):
+class Folder(FileItem):
     def __init__(self, path):
         super().__init__(path)
     # Deleting a directory

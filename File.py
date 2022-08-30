@@ -1,9 +1,9 @@
 import glob
 import os
 import shutil
-from Files import Files
+from FileItem import FileItem
 
-class File(Files):
+class File(FileItem):
 
   def __init__(self, path):
     super().__init__(path) 

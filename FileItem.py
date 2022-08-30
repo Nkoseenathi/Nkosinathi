@@ -1,6 +1,6 @@
 import os
 
-class Files:
+class FileItem:
     def __init__(self, path):
         self.path = path
         
@@ -10,10 +10,10 @@ class Files:
     def getName(self):
         return self.path
     
-    def rename(destination):
+    def rename(self,destination):
         message = ""
         if os.path.isfile(destination) or os.path.isdir(destination):
-            os.rename(path,destination)
+            os.rename(self.path,destination)
             message = "File renamed successfully"
             
         else:
