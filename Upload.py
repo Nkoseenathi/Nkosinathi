@@ -7,9 +7,17 @@ import GUI
 
 class Upload:
     
+    # Method for uploading user files to the server
     def upload(self):
-        form = cgi.FieldStorage()
         
+        
+        form = cgi.FieldStorage()
+
+        for i in form.keys():
+            if str(i)!='filename':
+                path = str(i).replace("@", "\\")
+                os.chdir(path)   
+                break
         # Get filename here.
         fileitem = form['filename']
         
@@ -24,7 +32,7 @@ class Upload:
         
         else:
             message = 'No file was uploaded'
-        
+    
     def main():
         up = Upload.Upload()
         up.upload()

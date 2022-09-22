@@ -14,10 +14,20 @@ class Folder(FileItem):
             message ="Directory does not exist"    
             
     # Copying directory
-    def copyDir(src, dst):
+    def copyDir(self,src, dst):
     
         if os.path.isdir(src):
             shutil.copytree(src, dst+src[1:])
             message ="Directory has been copied"
         else:
             message ="Directory does not exist"
+            
+    def create(self, dst,name):
+        
+        os.chdir(dst)
+        try:
+            os.mkdir(name)
+            return True
+            
+        except:
+            return "Username already exists"
