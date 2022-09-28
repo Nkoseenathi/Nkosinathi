@@ -13,6 +13,11 @@ body{margin-top:20px;}
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
 }
+
+.inline-block-child {
+  display: inline-block;
+}
+
 .file-manager-container {
     display: -ms-flexbox;
     display: flex;

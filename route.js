@@ -19,22 +19,75 @@ function go_to(loc) {
 		  type = "audio"
 		  
 	  }
-	  document.location =`File.py?path=`+loc+`&typ=`+type
+	  document.location =`File.py?path=.`+loc+`&typ=`+type
   
  
   }
   else{
-	document.location =`GUI.py?path=`+loc}
+	document.location =`GUI.py?action=path&path=.`+loc}
 
 }
 
 
 function locate(loc) {
 
-	document.location =`GUI.py?path=`+loc
+	document.location =`GUI.py?action=path&path=`+loc
   
 
 }
-function create() {
+function createUser() {
 	document.location =`GUI.py?action=create`
 }
+
+function rename(oname){
+	
+	var temp = oname.split(".")
+	var extenstion =""
+	if (temp.length>1){
+		extenstion = "."+temp[1]
+	}
+	let name = prompt("Enter new name")
+	if(!(name==null || name=="")){
+		document.location =`GUI.py?action=rename&nname=`+name+extenstion+`&name=.`+oname
+	}
+	}
+	
+function fdelete(name){
+	
+	document.location =`GUI.py?action=delete&name=.`+name
+	
+}
+
+function move(name){
+	
+	document.location =`GUI.py?action=move&name=`+name
+	
+}
+
+function download(name){
+	
+	document.location =`Download.py?name=.`+name
+	
+}
+
+function copy(name){
+	
+	document.location =`GUI.py?action=copy&name=`+name
+	
+}
+
+function create(path){
+	
+    let name = prompt("Enter Folder name")
+	document.location =`GUI.py?action=createD&name=`+name+`&path=`+path
+	
+}
+
+function logout(){
+	
+	let logout = confirm("Are you sure you want to logout?");	
+	if(logout == true)
+		document.location =`GUI.py`
+	
+}
+

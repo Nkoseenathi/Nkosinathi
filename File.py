@@ -25,15 +25,10 @@ class File(FileItem):
     else:
       message ="File does not exist"
       
-  # Method for copying a file  
-  def copyFile(original,target):
-    
-    if os.path.isfile(original): # Checks if the file exists
-      shutil.copyfile(original, target+original[1:]) # Copies the file
-      message ="File has been copied"
-    else:
-      message ="File does not exist" 
-      
+   # Opens the file     
+   #  The path parameter is the path of the file to be opened 
+   # The typ parameter is the type of file to be opened 
+   # The viewer method in GUI is displayed to generate a html page that wil display the file
   def openF(self,path,typ):
     
     gui = GUI.GUI() 

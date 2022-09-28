@@ -6,10 +6,15 @@ import cgi
 import cgitb
 import GUI
 import Login
+import Folder, File
+
 
 
 class GUI:
     
+    # This methods generates the login html for displaying the login screen to the user
+    # The message parameter displays the error message if the user entered the wrong details
+    # It is initially empty if the user is logging in for the first time
     def login(self,message):
      
         if message!="":
@@ -21,11 +26,11 @@ class GUI:
          <br />
          Last Name: <input type = "text" name = "password" />
          <br/>
-         <a name="create" href="javascript:create()">Create new account</a>
+         <a name="create" href="javascript:createUser()">Create new account</a>
          <br/>
-         <input type = "submit" value = "Login" />
-         <br />
          """+message+"""
+         <input type = "submit" value = "Login" />
+         
          </form>""")
         else:
             print("Content-type:text/html\r\n\r\n ")
@@ -36,53 +41,38 @@ class GUI:
          <br />  
          Last Name: <input type = "text" name = "password" />
          <br/>
-         <a name="create" href="javascript:create()">Create new account</a>
+         <a name="create" href="javascript:createUser()">Create new account</a>
          <br/>
          <input type = "submit" value = "Login" />
          </form>""")        
-        
-    def create(self,message,err):
-
-        if message=="create":
-            
-            print("Content-type:text/html\r\n\r\n ")
-            print("""<form action = "Login.py?" method = "get">
-         First Name: <input type = "text" name = "username">  
-         <br />
-         Password: <input type = "text" name = "password" />
-         <br />
-         Confirm : <input type = "text" name = "confirm" />
-         <br />"""+err+"""
-         <br />
-         <input type = "submit" value = "Create" />
-         </form>""")
-            
-        elif message == False:
-            
-            print("Content-type:text/html\r\n\r\n ")
-            print("""<form action = "Login.py" method = "get">
-         First Name: <input type = "text" name = "username">  
-         <br />
-         <a name="create" href="javascript:create()">Create new account</a>
-         Last Name: <input type = "text" name = "password" />
-         <br/>
-         <input type = "submit" value = "Login" />
-         <br />
-         """+message+"""
+      
+     # This methods generates the html for creating a new account which will be displayed to the browser
+     # The error parameter diplays an error if the was a problem creating a new account
+    def create(self,err):
+         
+        print("Content-type:text/html\r\n\r\n ")
+        print("""<form action = "Login.py?" method = "get">
+     First Name: <input type = "text" name = "username">  
+     <br />
+     Password: <input type = "text" name = "password" />
+     <br />
+     Confirm : <input type = "text" name = "confirm" />
+     <br />"""+err+"""
+     <br />
+     <input type = "submit" value = "Create" />
          </form>""")   
         
-        else:
-            
-            gui = GUI.GUI()
-            gui.layout()             
-        
     def layout(self):
-
+        # Gets the path from cgi storage and change the working directory to the path recieved
+        # Javascrips gives an error for paths that contain backslash so the backslash is replaced by @ when it is passed to the html page
+        # When the path is passed back to the system for processing it reverted back to the backslashes 
         path = cgi.FieldStorage()
         if (str(path.getvalue('path'))) != "None":
             path = str(path.getvalue('path')).replace("@", "\\")
             os.chdir(path)
 
+        # After changing the working directory all the file items are stored in the userFolder the list of the files is obtained using glob module
+        # The path is broken down to componets to separate the folder name from the path so that it will be displayed correctly to the user
         userFolder = glob.glob(".\\*")
         normalized_path = os.path.normpath(os.getcwd())
         path_components = normalized_path.split(os.sep)
@@ -104,6 +94,9 @@ class GUI:
         <div class="container flex-grow-1 light-style container-p-y">
           <div class="container-m-nx container-m-ny bg-lightest mb-3">
             <ol class="breadcrumb text-big container-p-x py-3 m-0">""")
+        
+        # Displays a navigation bar which consist of links of parent directories of the current directory the user is in.
+        # Start from 5 to restrict the user from navigating to folders in the server that they shouldn't have access to e.g accessing other users folders or files in the server that do not belong to them
         for i in range(5, len(paths)):
 
             print("""<li class="breadcrumb-item">""")
@@ -111,17 +104,23 @@ class GUI:
             
         print("</li>")
 
+        # Displays a form which contains the upload button and the file chooser
+        # Also displays the move,create copy and logout button 
         print("""
              </ol>
              
             <table class="table"> 
-             <tr><div>
+             <tr><div class="child inline-block-child">
             <form enctype = "multipart/form-data" 
                               action = "Upload.py" method = "post">
             <p>File: <input type = "file" name = "filename" /></p>
             <p><input type = "submit" name =""" +'"'+os.getcwd()+'"' +""" value="Upload" class="btn btn-primary mr-2"/><i class="ion ion-md-cloud-upload"></i></p>
             </form>
             </div></tr>
+            <div class="child inline-block-child"> <input type = "submit" onclick="javascript:create(`"""+str(os.getcwd()).replace("\\","@")+"""`)" value="Create new foder" > </div>
+            <div class="child inline-block-child"> <input type = "submit" value="Move" onclick="javascript:move(`"""+str(os.getcwd()).replace("\\","@")+"""`)"> </div>
+            <div class="child inline-block-child"> <input type = "submit" value="Copy" onclick="javascript:copy(`"""+str(os.getcwd()).replace("\\","@")+"""`)"> </div>
+            <div class="child inline-block-child"> <input type = "submit" onclick="javascript:logout()" value="Logout"> </div>
             
              <hr class="m-0" />
         
@@ -133,9 +132,9 @@ class GUI:
              </div>""")
         
              
-        # Print all the user files
+        # Print all the user files in the current working directory
         for i in userFolder:
-            # Diplays the the files the given folder which is stored in userFolder
+            
             print("""
    
            <div class="file-item">
@@ -144,38 +143,63 @@ class GUI:
                     <input type="checkbox" class="custom-control-input" />
                     <span class="custom-control-label"></span>
                 </label>""")
-            print(self.fileType(i[2:]))
-
-            print("""<a name="file-item" class="file-item-name" href="""+""""javascript:go_to(`""" +
-                  str(os.getcwd()).replace("\\", "@")+"@"+i[2:]+"""`)">"""+i[2:]+"</a>")  # Display the file name
-            print(" <form action = \"FormHandler.py\" method = \"post\" target = \"_blank\">")   # Specify the file that is going to perfom the form action
-            # print("<input type = \"submit\" name="+i.replace(" ","^")+" value = \"Commit\"/> </form> ") # Since names with more than one word don't get passed replace the spaces with a character to make the name a single word
+            # Gets the file extenstion and determines the file type so that a proper icon will be displayed for the file 
+            fileType = self.fileType(i[2:])
+            print(fileType)
+            # Modify the file item path so that the files can be accessed by the browser when running the server as the browser doesnt allow access of file stored locally in the machine
+            # truncate the local part of the file item and make the path start from the server name e.g C:\Nkosinathi\server\users\Nkosi ---> .\users\Nkosi
+            wd = str(os.getcwd())
+            try:
+                index = wd.index("users")
+            except:
+                index = wd.index("Users")
+            name = "\\"+wd[index:]     
+            txtName = "."+name+"\\"+i[2:]
+            name = name.replace("\\", "@")+"@"+i[2:]
+            # Add dropdown item to the file item
+            
+            print(""" <div class="file-item-actions btn-group">
+                <button type="button" class="btn btn-default btn-sm rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle" data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="""+""""javascript:rename(`""" +
+                  name+"""`)">Rename</a>""")
+            print("""<a class="dropdown-item" href="""+""""javascript:move(`""" +
+                  name+"""`)">Move</a>""")
+            print("""<a class="dropdown-item" href="""+""""javascript:copy(`""" +
+                  name+"""`)">Copy</a>""")
+            print("""<a class="dropdown-item" href="""+""""javascript:fdelete(`""" +
+                  name+"""`)">Delete</a>""")      
+            print("""<a class="dropdown-item" href="""+""""javascript:download(`""" +
+                  name+"""`)">Download</a></div></div> """) 
+            
+            # Dont use javascript for text documents as they can be viewed by the browser automatically and dont have to be processed first
+            if fileType == """<div class="file-item-icon far fa-file-alt text-secondary"></div>""" or fileType == """<div class="file-item-icon far fa-file text-secondary"></div>""" :
+            
+                print("""<a name="file-item" class="file-item-name" <a href="""+'"'+txtName+'"'+" )>"+i[2:]+"</a>") # Display the file name
+            else:
+                print("""<a name="file-item" class="file-item-name" href="""+""""javascript:go_to(`""" +
+                      name+"""`)">"""+i[2:]+"</a>")  # Display the file name
             print("""          
-        </div>
-        
-
-        """)
+                     </div>
+                     
+             
+                     """)
         print("</html>")
 
+    # Determines how a file is going to be opened based on its file type
+    # The typ parameter is used to determine the view
+    # The path parameter is the path of the file to be viewed
     def viewer(self, path,typ):
-        
-        path = path
+
         name = str(path).split("\\")
         name = name[len(name)-1]
         path = path[:-len("\\"+name)]
         os.chdir(path)
-        path = name
+        path = path+"\\"+name
+        
 
 
-        if(typ=="text"):
-            
-            print("Content-type:text/html\r\n\r\n ")
-            with open(path) as f:
-    
-                for i in f:
-                    print(i+"\n")
-                    
-        elif typ == "video":
+        if typ == "video":
             
             print("Content-type:text/html\r\n\r\n ")
             print("""  
@@ -208,7 +232,8 @@ class GUI:
               <img src="""+'"'+path+'"'+""" alt="Image type not supported" width="800" height="500">
            </body>
         </html>""")
-                    
+     
+     # Determines a file by its extenstion or by checking if its a directory and return the icon of the file based on its type               
     def fileType(self,name):
         
         if os.path.isdir(".\\"+name):
@@ -227,7 +252,41 @@ class GUI:
             return """<div class="file-item-icon far fa-file-alt text-secondary"></div>"""
                                                  
         return """<div class="file-item-icon far fa-file text-secondary"></div>"""
+   # Preprocesses the path of a file to be renamed and call the rename method to rename the file item
+   # The path parameter is the path of the file to be renamed and it contains @ instead of \ hence it needs to be preproccessed
+   # nname is the new name of the file item to be renamed
+   
+    def rename(self, path,nname):
+        
+ 
+        name = str(path).split("@")
+        path = path.replace("@","\\")
+        name = name[len(name)-1]
+        path = path[:-len("\\"+name)]
+        os.chdir(path)
+        
+        folder = Folder.Folder(".\\"+name)
+        folder.rename(".\\"+nname)
+        self.layout() # Refreshes the page to show new name of the file item
+   
+    # Preprocesses the path that the folder is going to be created on and calls the folder create method craate a new folder   
+    # The path the new folder is going to be created on
+    # The name of new folder
+    # type: the type of folder that is going to be created 
+    def createFolder(self, path,name,typ): 
+        
+        path = str(path).replace("@","\\")
+        if(typ == "Username"):
+            name = str(path).split("@")
+            name = name[len(name)-1]
+        folder = Folder.Folder(name)
+        folder.create(path,name,typ)
+        self.layout()        
+        
+         
     
+    # Breaks down a path of a nested subfolder into separate parent folders and stores them in a list
+    # The path parameter is the subfolder path that is going to be broken down
     def pathBuilder(self, path):
         normalized_path = os.path.normpath(path)
         path_components = normalized_path.split(os.sep)
@@ -236,16 +295,94 @@ class GUI:
         for i in range(1, len(path_components)):
             builder.append(builder[i-1]+"@"+path_components[i])
         return builder
-
+    
+  # The main method gets data from cgi storage Preprocesses the data, calls the method/object to handle the recieved data and diplays the output based on the method/object
     def main():
 
         gui = GUI.GUI()  # Create an object of the GUI class
-        if str(cgi.FieldStorage().getvalue('action')) == "create":
-            gui.create("create","")  
+        ui = str(cgi.FieldStorage().getvalue('action'))
+
+        if  ui == "create":
+            gui.create("")  
             
-        elif str(cgi.FieldStorage().getvalue('path')) == "None":
+        elif ui == "createD":# create directory
+           
+            name = str(cgi.FieldStorage().getvalue('name'))
+            path = str(cgi.FieldStorage().getvalue('path'))
+            gui.createFolder(path,name,"Folder name")
             
-            gui.login("")  # Diplay user interface and the all file in the top directory of the user
+    
+        
+        elif ui == "delete":
+
+            name = str(cgi.FieldStorage().getvalue('name'))
+            path = name
+            name = str(path).split("@")
+            path = path.replace("@","\\")
+            name = name[len(name)-1]
+            path = path[:-len("\\"+name)]
+            os.chdir(path)            
+            if len(str(name).split(".")) == 1:
+                folder = Folder.Folder(".\\"+name)
+                folder.deleteDir()
+            else:
+                file = File.File(".\\"+name)
+                file.deleteFile()  
+            gui.layout()
+                
+            
+        
+        elif ui == "rename":
+            
+            name = str(cgi.FieldStorage().getvalue('name'))
+            nname = str(cgi.FieldStorage().getvalue('nname'))            
+            gui = GUI.GUI()
+            gui.rename(name,nname)
+       
+            
+        
+        elif ui == "move" or ui == "copy":
+            
+            temp = open("C:\\xampp\\htdocs\\fileman\\"+ui+".txt")
+            line = str(temp.readline())
+            if  line=='':
+                
+                temp.close()
+                name = "."+str(cgi.FieldStorage().getvalue('name')).replace("@","\\")
+                tname = str(name).split("\\")
+                tname = tname[len(tname)-1]
+                path = name[:-len("\\"+tname)]  
+                os.chdir(path)
+                temp = open("C:\\xampp\\htdocs\\fileman\\"+ui+".txt",'w')
+                temp.write(os.path.abspath(".\\"+tname))
+                temp.close()
+                
+            else:
+                
+                temp = open(r"C:\\xampp\\htdocs\\fileman\\"+ui+".txt")
+                name = line.strip()
+                nname = str(cgi.FieldStorage().getvalue('name')).replace("@","\\")
+                os.chdir(nname)
+                folder = Folder.Folder(name)
+                if(ui=="move"):
+                    folder.move(nname)
+                else:
+                    folder.copy(nname)
+                   
+                temp = open("C:\\xampp\\htdocs\\fileman\\"+ui+".txt","r+")
+                temp.truncate(0) # clears the file
+                temp.close()
+                
+            gui.layout()
+            
+            
+        elif ui =="path":
+            gui.layout()        
+                
+        elif ui == "None":
+            
+            gui.login("")  # Diplay the login screen
+            
   
         else:
             gui.layout()

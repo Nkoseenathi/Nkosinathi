@@ -2,33 +2,37 @@ import os
 import shutil
 
 class FileItem:
+    
     def __init__(self, path):
         self.path = path
         
-    def getSize(self):
-        return os.stat(self.path);
+
+    # Copies a file item to given destination
+    # The dst parameter is the destination of the file item
+    # the temp variable holds the name of the file item
+    # Checks if the file item is file or folder to apply the correct code
+    # The name in temp is appended to the destination so that file item will be copied to that destination 
+    def copy(self,dst):
+        temp = self.path.split("\\");
+        if os.path.isdir(self.path):
+            shutil.copytree(self.path, dst+"\\"+temp[len(temp)-1])
+            
+        if os.path.isfile(self.path): 
+            shutil.copyfile(self.path, dst+"\\"+temp[len(temp)-1])
     
-    def getName(self):
-        return self.path
-    
-    def rename(self,destination):
-        message = ""
-        if os.path.isfile(destination) or os.path.isdir(destination):
-            os.rename(self.path,destination)
-            message = "File renamed successfully"
-            
-        else:
-            message = "File not renamed successfully"   
-        return message
-            
-            
+    # Renames the file item to the given in the nname parameter
+    def rename(self,nname):
+        
+        os.rename(self.path,nname)
+         
+      # Moves the file to the given destination in the destination   parameter    
     def move(self,destination):
-        message = ""
-        if os.path.isfile(destination) or os.path.isdir(destination):
-            shutil.move(self.path, destination)
-            message = "File moved successfully"
+        shutil.move(self.path, destination)
+       
             
-        else:
-            message = "File not moved successfully"   
-        return message        
+        
+        
+
+            
+      
         
