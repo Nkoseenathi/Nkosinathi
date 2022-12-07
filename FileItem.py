@@ -13,24 +13,37 @@ class FileItem:
     # Checks if the file item is file or folder to apply the correct code
     # The name in temp is appended to the destination so that file item will be copied to that destination 
     def copy(self,dst):
-        temp = self.path.split("\\");
-        if os.path.isdir(self.path):
-            shutil.copytree(self.path, dst+"\\"+temp[len(temp)-1])
+        try:
+            temp = self.path.split("\\");
+            if os.path.isdir(self.path):
+                shutil.copytree(self.path, dst+"\\"+temp[len(temp)-1])
+                
+            if os.path.isfile(self.path): 
+                shutil.copyfile(self.path, dst+"\\"+temp[len(temp)-1])
+        except:
+            self.clearFile("copy") 
             
-        if os.path.isfile(self.path): 
-            shutil.copyfile(self.path, dst+"\\"+temp[len(temp)-1])
-    
-    # Renames the file item to the given in the nname parameter
-    def rename(self,nname):
-        
-        os.rename(self.path,nname)
-         
+    # Renames the file item to the given in the destination parameter
+    def rename(self,destination):
+        try:
+            os.rename(self.path,destination)
+        except Exception as e:
+            y= open("testing.txt",'w')
+            y.write(str(e))
+            y.close()     
+            
       # Moves the file to the given destination in the destination   parameter    
     def move(self,destination):
-        shutil.move(self.path, destination)
+        try:        
+            shutil.move(self.path, destination)
+        except:
+            self.clearFile("move")          
        
             
-        
+    def clearFile(self, name):
+        temp = open("C:\\xampp\\htdocs\\fileman\\"+name+".txt",'w')
+        temp.truncate(0) # clears the file
+        temp.close()        
         
 
             

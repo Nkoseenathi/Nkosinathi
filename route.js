@@ -44,7 +44,7 @@ function rename(oname){
 	var temp = oname.split(".")
 	var extenstion =""
 	if (temp.length>1){
-		extenstion = "."+temp[1]
+		extenstion = "."+temp[temp.length-1]
 	}
 	let name = prompt("Enter new name")
 	if(!(name==null || name=="")){
